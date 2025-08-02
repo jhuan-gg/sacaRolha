@@ -1,12 +1,19 @@
 import { useState } from 'react'
-import Login from './components/Login'
 import './App.css'
+import { BrowserRouter } from 'react-router-dom'
+import AppRoutes from './components/routes/AppRoutes'
+import ErrorBoundary from './components/common/ErrorBoundary'
+import { AuthProvider } from './contexts/AuthContext'
 
 function App() {
   return (
-    <>
-      <Login />
-    </>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   )
 }
 

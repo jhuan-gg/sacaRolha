@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Card,
@@ -13,10 +13,20 @@ import {
   FormControl,
   Fade,
   Zoom,
+  Alert,
+  CircularProgress,
+  Link
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { 
+  Visibility, 
+  VisibilityOff,
+  Email as EmailIcon,
+  Lock as LockIcon
+} from '@mui/icons-material';
 import { IconButton, InputAdornment } from '@mui/material';
+import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 // Componentes estilizados
 const LoginContainer = styled(Box)(({ theme }) => ({
@@ -175,17 +185,116 @@ const StyledButton = styled(Button)(({ theme }) => ({
 }));
 
 function Login() {
-  const [usuario, setUsuario] = useState('');
+  const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  
   const theme = useTheme();
+  const navigate = useNavigate();
+  const { login, resetPassword, currentUser } = useAuth();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
   const isLandscapeMobile = useMediaQuery('(orientation: landscape) and (max-height: 500px)');
 
-  const handleSubmit = (e) => {
+  // Redireciona se já estiver logado
+  useEffect(() => {
+    if (currentUser) {
+      console.log('🏠 Usuário já logado, redirecionando para dashboard...');
+      navigate('/home', { replace: true });
+    }
+  }, [currentUser, navigate]);
+
+  // Previne acesso direto a rotas protegidas via URL
+  useEffect(() => {
+    const currentPath = window.location.pathname;
+    const protectedPaths = ['/home', '/listagem', '/cadastrar', '/visualizar', '/configuracoes'];
+    
+    if (protectedPaths.includes(currentPath) && !currentUser) {
+      console.log('🛡️ Tentativa de acesso direto bloqueada:', currentPath);
+      navigate('/login', { replace: true });
+    }
+  }, [navigate, currentUser]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Login:', { usuario, senha });
+    setError('');
+    
+    if (!email || !senha) {
+      setError('Por favor, preencha todos os campos');
+      return;
+    }
+
+    if (!email.includes('@')) {
+      setError('Por favor, insira um email válido');
+      return;
+    }
+
+    setLoading(true);
+    console.log('🔐 Tentando fazer login...');
+
+    try {
+      await login(email, senha);
+      console.log('✅ Login bem-sucedido, redirecionando...');
+      
+      // Redireciona imediatamente para o dashboard
+      navigate('/home', { replace: true });
+    } catch (error) {
+      console.error('❌ Erro no login:', error);
+      
+      // Tratar diferentes tipos de erro do Firebase
+      switch (error.code) {
+        case 'auth/invalid-email':
+          setError('Email inválido');
+          break;
+        case 'auth/user-disabled':
+          setError('Esta conta foi desabilitada');
+          break;
+        case 'auth/user-not-found':
+          setError('Usuário não encontrado');
+          break;
+        case 'auth/wrong-password':
+          setError('Senha incorreta');
+          break;
+        case 'auth/invalid-credential':
+          setError('Credenciais inválidas. Verifique email e senha');
+          break;
+        case 'auth/too-many-requests':
+          setError('Muitas tentativas de login. Tente novamente mais tarde');
+          break;
+        case 'auth/network-request-failed':
+          setError('Erro de conexão. Verifique sua internet');
+          break;
+        default:
+          setError(error.message || 'Erro ao fazer login. Tente novamente');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError('Digite seu email primeiro');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      await resetPassword(email);
+      setError('');
+      alert('Email de recuperação enviado! Verifique sua caixa de entrada.');
+      setShowForgotPassword(false);
+    } catch (error) {
+      console.error('Erro ao enviar email de recuperação:', error);
+      setError('Erro ao enviar email de recuperação. Verifique o email digitado');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClickShowPassword = () => {
@@ -283,14 +392,16 @@ function Login() {
                       paddingLeft: 2,
                     }}
                   >
-                    USUÁRIO
+                    EMAIL
                   </InputLabel>
                   <StyledTextField
-                    value={usuario}
-                    onChange={(e) => setUsuario(e.target.value)}
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     variant="outlined"
                     fullWidth
                     required
+                    disabled={loading}
                     sx={{ 
                       '& .MuiOutlinedInput-root': { 
                         color: 'tertiary.main',
@@ -323,6 +434,7 @@ function Login() {
                     variant="outlined"
                     fullWidth
                     required
+                    disabled={loading}
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
@@ -330,6 +442,7 @@ function Login() {
                             aria-label="toggle password visibility"
                             onClick={handleClickShowPassword}
                             edge="end"
+                            disabled={loading}
                             sx={{ 
                               color: 'tertiary.main',
                               '&:hover': {
@@ -355,15 +468,66 @@ function Login() {
                     }}
                   />
                 </FormControl>
+
+                {error && (
+                  <Alert 
+                    severity="error" 
+                    sx={{ 
+                      mt: 2, 
+                      backgroundColor: 'rgba(133, 60, 67, 0.1)',
+                      color: 'primary.main',
+                      '& .MuiAlert-icon': {
+                        color: 'primary.main'
+                      }
+                    }}
+                  >
+                    {error}
+                  </Alert>
+                )}
                 
                 <StyledButton
                   type="submit"
                   variant="contained"
                   fullWidth
                   size="large"
+                  disabled={loading}
+                  sx={{
+                    position: 'relative',
+                  }}
                 >
-                  Acessar
+                  {loading ? (
+                    <>
+                      <CircularProgress 
+                        size={20} 
+                        sx={{ 
+                          color: 'white',
+                          position: 'absolute',
+                          left: '50%',
+                          marginLeft: '-10px'
+                        }} 
+                      />
+                      <span style={{ opacity: 0 }}>Acessar</span>
+                    </>
+                  ) : (
+                    'Acessar'
+                  )}
                 </StyledButton>
+
+                <Button
+                  variant="text"
+                  onClick={handleForgotPassword}
+                  disabled={loading}
+                  sx={{
+                    mt: 2,
+                    color: 'tertiary.main',
+                    textTransform: 'none',
+                    '&:hover': {
+                      backgroundColor: 'rgba(67, 35, 48, 0.1)',
+                    }
+                  }}
+                >
+                  Esqueci minha senha
+                </Button>
               </Box>
             </Fade>
           </FormSection>
