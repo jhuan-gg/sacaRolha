@@ -19,7 +19,6 @@ import {
   Menu as MenuIcon,
   Close as CloseIcon,
   List as ListIcon,
-  PersonAdd as PersonAddIcon,
   LocalBar as WineIcon,
   Dashboard as DashboardIcon,
   Logout as LogoutIcon,
@@ -109,7 +108,7 @@ const menuItems = [
   },
   {
     text: 'Cadastrar Vinho',
-    icon: <PersonAddIcon />,
+    icon: <WineIcon />,
     path: '/cadastrar'
   },
   {

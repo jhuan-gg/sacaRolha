@@ -22,18 +22,66 @@ import {
 } from '@mui/material';
 import {
   Save as SaveIcon,
-  LocalBar as WineIcon,
-  ArrowBack as ArrowBackIcon
+  LocalBar as WineIcon
 } from '@mui/icons-material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { collection, addDoc, doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 
+const StyledTextField = styled(TextField)(({ theme }) => ({
+  '& .MuiOutlinedInput-root': {
+    borderRadius: 12,
+    '&:hover .MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.palette.primary.main,
+    }
+  },
+  [theme.breakpoints.down('sm')]: {
+    '& .MuiInputLabel-root': {
+      fontSize: '0.9rem'
+    },
+    '& .MuiOutlinedInput-input': {
+      fontSize: '0.9rem'
+    }
+  }
+}));
+
+const StyledFormControl = styled(FormControl)(({ theme }) => ({
+  '& .MuiOutlinedInput-root': {
+    borderRadius: 12,
+    '&:hover .MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.palette.primary.main,
+    }
+  },
+  [theme.breakpoints.down('sm')]: {
+    '& .MuiInputLabel-root': {
+      fontSize: '0.9rem'
+    },
+    '& .MuiSelect-select': {
+      fontSize: '0.9rem'
+    }
+  }
+}));
+
+const StyledRating = styled(Rating)(({ theme }) => ({
+  [theme.breakpoints.down('sm')]: {
+    '& .MuiRating-iconFilled': {
+      fontSize: '1.5rem'
+    },
+    '& .MuiRating-iconEmpty': {
+      fontSize: '1.5rem'
+    }
+  }
+}));
+
 const StyledContainer = styled(Container)(({ theme }) => ({
-  paddingTop: theme.spacing(3),
+  paddingTop: theme.spacing(2),
   paddingBottom: theme.spacing(3),
-  minHeight: '100vh'
+  minHeight: '100vh',
+  [theme.breakpoints.down('sm')]: {
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1)
+  }
 }));
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -42,16 +90,24 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
   [theme.breakpoints.down('sm')]: {
     padding: theme.spacing(2),
-    margin: theme.spacing(1)
+    margin: theme.spacing(0, 1),
+    borderRadius: 12
   }
 }));
 
-const StyledTextField = styled(TextField)(({ theme }) => ({
-  '& .MuiOutlinedInput-root': {
-    borderRadius: 12,
-    '&:hover .MuiOutlinedInput-notchedOutline': {
-      borderColor: theme.palette.primary.main,
-    }
+const HeaderBox = styled(Box)(({ theme }) => ({
+  marginBottom: theme.spacing(3),
+  [theme.breakpoints.down('sm')]: {
+    textAlign: 'center',
+    marginBottom: theme.spacing(2)
+  }
+}));
+
+const SectionTitle = styled(Typography)(({ theme }) => ({
+  marginBottom: theme.spacing(2),
+  [theme.breakpoints.down('sm')]: {
+    fontSize: '1.1rem',
+    marginBottom: theme.spacing(1.5)
   }
 }));
 
@@ -64,6 +120,11 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   '&:hover': {
     boxShadow: '0 6px 20px rgba(133, 60, 67, 0.4)',
     transform: 'translateY(-2px)'
+  },
+  [theme.breakpoints.down('sm')]: {
+    width: '100%',
+    padding: theme.spacing(2, 3),
+    fontSize: '1rem'
   }
 }));
 
@@ -238,45 +299,58 @@ function CadastrarVinho() {
 
   return (
     <StyledContainer maxWidth="md">
-      <Box display="flex" alignItems="center" mb={3}>
-        <Button
-          startIcon={<ArrowBackIcon />}
-          onClick={() => navigate('/listagem')}
-          sx={{ mr: 2 }}
+      <HeaderBox>
+        <Typography 
+          variant={isMobile ? "h5" : "h4"} 
+          component="h1" 
+          fontWeight="bold" 
+          color="primary"
         >
-          Voltar
-        </Button>
-        <Box>
-          <Typography variant="h4" component="h1" fontWeight="bold" color="primary">
-            <WineIcon sx={{ mr: 2, verticalAlign: 'middle' }} />
-            {isEdit ? 'Editar Vinho' : 'Cadastrar Vinho'}
-          </Typography>
-          <Typography variant="subtitle1" color="text.secondary">
-            {isEdit ? 'Edite as informações do vinho' : 'Preencha as informações do vinho'}
-          </Typography>
-        </Box>
-      </Box>
+          <WineIcon sx={{ mr: 2, verticalAlign: 'middle' }} />
+          {isEdit ? 'Editar Vinho' : 'Cadastrar Vinho'}
+        </Typography>
+        <Typography 
+          variant={isMobile ? "body2" : "subtitle1"} 
+          color="text.secondary"
+        >
+          {isEdit ? 'Edite as informações do vinho' : 'Preencha as informações do vinho'}
+        </Typography>
+      </HeaderBox>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
+        <Alert 
+          severity="error" 
+          sx={{ 
+            mb: 3,
+            mx: isMobile ? 1 : 0,
+            borderRadius: 3
+          }}
+        >
           {error}
         </Alert>
       )}
 
       {success && (
-        <Alert severity="success" sx={{ mb: 3 }}>
+        <Alert 
+          severity="success" 
+          sx={{ 
+            mb: 3,
+            mx: isMobile ? 1 : 0,
+            borderRadius: 3
+          }}
+        >
           {success}
         </Alert>
       )}
 
       <StyledPaper>
         <form onSubmit={handleSubmit}>
-          <Grid container spacing={3}>
+          <Grid container spacing={isMobile ? 2 : 3}>
             {/* Informações Básicas */}
             <Grid item xs={12}>
-              <Typography variant="h6" gutterBottom color="primary">
+              <SectionTitle variant="h6" color="primary">
                 Informações Básicas
-              </Typography>
+              </SectionTitle>
             </Grid>
 
             <Grid item xs={12} md={6}>
@@ -304,7 +378,7 @@ function CadastrarVinho() {
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <FormControl fullWidth required error={!!errors.tipoVinho}>
+              <StyledFormControl fullWidth required error={!!errors.tipoVinho}>
                 <InputLabel>Tipo do Vinho</InputLabel>
                 <Select
                   value={formData.tipoVinho}
@@ -321,7 +395,7 @@ function CadastrarVinho() {
                 {errors.tipoVinho && (
                   <FormHelperText>{errors.tipoVinho}</FormHelperText>
                 )}
-              </FormControl>
+              </StyledFormControl>
             </Grid>
 
             <Grid item xs={12} md={6}>
@@ -339,9 +413,9 @@ function CadastrarVinho() {
 
             {/* Origem */}
             <Grid item xs={12}>
-              <Typography variant="h6" gutterBottom color="primary">
+              <SectionTitle variant="h6" color="primary">
                 Origem
-              </Typography>
+              </SectionTitle>
             </Grid>
 
             <Grid item xs={12} md={6}>
@@ -367,9 +441,9 @@ function CadastrarVinho() {
 
             {/* Características */}
             <Grid item xs={12}>
-              <Typography variant="h6" gutterBottom color="primary">
+              <SectionTitle variant="h6" color="primary">
                 Características
-              </Typography>
+              </SectionTitle>
             </Grid>
 
             <Grid item xs={12} md={4}>
@@ -416,22 +490,26 @@ function CadastrarVinho() {
 
             {/* Avaliação */}
             <Grid item xs={12}>
-              <Typography variant="h6" gutterBottom color="primary">
+              <SectionTitle variant="h6" color="primary">
                 Avaliação
-              </Typography>
+              </SectionTitle>
             </Grid>
 
             <Grid item xs={12} md={6}>
               <Box>
-                <Typography component="legend" gutterBottom>
+                <Typography 
+                  component="legend" 
+                  gutterBottom
+                  sx={{ fontSize: isMobile ? '0.9rem' : '1rem' }}
+                >
                   Nota de Avaliação
                 </Typography>
-                <Rating
+                <StyledRating
                   value={formData.notaAvaliacao}
                   onChange={(event, newValue) => {
                     handleInputChange('notaAvaliacao', newValue || 0);
                   }}
-                  size="large"
+                  size={isMobile ? "medium" : "large"}
                 />
               </Box>
             </Grid>
@@ -450,14 +528,11 @@ function CadastrarVinho() {
 
             {/* Botões */}
             <Grid item xs={12}>
-              <Box display="flex" gap={2} justifyContent="flex-end">
-                <Button
-                  variant="outlined"
-                  onClick={() => navigate('/listagem')}
-                  disabled={submitLoading}
-                >
-                  Cancelar
-                </Button>
+              <Box 
+                display="flex" 
+                justifyContent={isMobile ? 'center' : 'flex-end'}
+                mt={2}
+              >
                 <SubmitButton
                   type="submit"
                   variant="contained"
