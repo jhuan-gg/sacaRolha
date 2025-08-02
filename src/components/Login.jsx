@@ -74,9 +74,15 @@ const LogoSection = styled(Box)(({ theme }) => ({
   background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.tertiary.main} 100%)`,
   padding: theme.spacing(5, 2.5),
   textAlign: 'center',
+  borderBottomLeftRadius: 30,
+  borderBottomRightRadius: 30,
+  borderTopLeftRadius: 18,
+  borderTopRightRadius: 18,
   [theme.breakpoints.down('sm')]: {
     padding: theme.spacing(6, 3),
     flex: '0 0 auto',
+      borderTopLeftRadius: 0,
+      borderTopRightRadius: 0,
   },
   [theme.breakpoints.down('md')]: {
     '@media (orientation: landscape) and (max-height: 500px)': {
@@ -88,7 +94,7 @@ const LogoSection = styled(Box)(({ theme }) => ({
 const LogoBox = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4, 2.5),
   border: `3px solid ${theme.palette.tertiary.main}`,
-  borderRadius: 10,
+  borderRadius: 30,
   backgroundColor: '#ffffff',
   [theme.breakpoints.down('sm')]: {
     padding: theme.spacing(3, 2),
@@ -105,9 +111,10 @@ const FormSection = styled(CardContent)(({ theme }) => ({
   flex: 1,
   display: 'flex',
   flexDirection: 'column',
+  borderRadius: 20,
   justifyContent: 'center',
   [theme.breakpoints.down('sm')]: {
-    padding: theme.spacing(4, 3),
+    padding: theme.spacing(6, 5),
     flex: 1,
     minHeight: 0,
     justifyContent: 'space-around',
@@ -115,6 +122,8 @@ const FormSection = styled(CardContent)(({ theme }) => ({
   [theme.breakpoints.down('md')]: {
     '@media (orientation: landscape) and (max-height: 500px)': {
       padding: theme.spacing(3, 3),
+        borderRadius: 20,
+
     },
   },
 }));
@@ -235,19 +244,19 @@ function Login() {
           <FormSection>
             <Fade in={true} timeout={1500}>
               <Typography
-                variant="h2"
+                variant="h"
                 sx={{
-                  fontSize: getFormTitleSize(),
+                  fontSize: 30,
                   fontWeight: 'bold',
                   color: 'tertiary.main',
                   textAlign: 'center',
                   marginBottom: isLandscapeMobile ? 2 : isMobile ? 3 : 5,
+                  marginTop: isLandscapeMobile ? 0 : isMobile ? 10 : 0,
                 }}
               >
-                Login
+                Faça seu login
               </Typography>
             </Fade>
-            
             <Fade in={true} timeout={2000}>
               <Box 
                 component="form" 
@@ -271,6 +280,7 @@ function Login() {
                       position: 'static',
                       transform: 'none',
                       marginBottom: 1,
+                      paddingLeft: 2,
                     }}
                   >
                     USUÁRIO
@@ -301,6 +311,7 @@ function Login() {
                       position: 'static',
                       transform: 'none',
                       marginBottom: 1,
+                      paddingLeft: 2,
                     }}
                   >
                     SENHA
@@ -311,7 +322,6 @@ function Login() {
                     onChange={(e) => setSenha(e.target.value)}
                     variant="outlined"
                     fullWidth
-                    placeholder="••••••••••"
                     required
                     InputProps={{
                       endAdornment: (
