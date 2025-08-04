@@ -1,10 +1,10 @@
-# 🍷 SacaRolha
+# SacaRolha
 
 **Teste Técnico - Desenvolvedor Frontend**
 
 PWA de gestão de vinhos com React + Firebase.
 
-## 🛠️ Stack
+## Stack
 
 - React 19 + Hooks
 - Material-UI 7
@@ -12,15 +12,15 @@ PWA de gestão de vinhos com React + Firebase.
 - Vite + PWA
 - React Router
 
-## ⚡ Funcionalidades
+## Funcionalidades
 
-- ✅ Autenticação Firebase
-- ✅ CRUD completo
-- ✅ Dashboard com gráficos
-- ✅ PWA instalável
-- ✅ Responsive design
+- Autenticação Firebase
+- CRUD completo
+- Dashboard com gráficos
+- PWA instalável
+- Responsive design
 
-## 🚀 Executar
+## Executar
 
 ```bash
 git clone https://github.com/jhuan-gg/sacaRolha.git
@@ -31,14 +31,14 @@ npm run dev
 
 **Configurar Firebase:** `src/firebase/config.js`
 
-## 📦 Build
+## Build
 
 ```bash
 npm run build
 npm run preview
 ```
 
-## 📁 Estrutura
+## Estrutura
 
 ```
 src/
@@ -50,7 +50,7 @@ src/
 └── theme/         # Material-UI theme
 ```
 
-## 🎯 Demonstra
+## Demonstra
 
 - Arquitetura React moderna
 - PWA com service worker
