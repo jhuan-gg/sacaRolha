@@ -41,12 +41,14 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { collection, addDoc, doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebase/config';
-import { useAuth } from '../../contexts/AuthContext';
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   paddingTop: theme.spacing(2),
   paddingBottom: theme.spacing(3),
+  paddingLeft: theme.spacing(3),
+  paddingRight: theme.spacing(3),
   minHeight: '100vh',
+  backgroundColor: theme.palette.grey[50],
   [theme.breakpoints.down('sm')]: {
     paddingLeft: theme.spacing(1),
     paddingRight: theme.spacing(1)
@@ -268,7 +270,6 @@ function Cadastrar() {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const editId = searchParams.get('edit');
   const isEdit = Boolean(editId);
-  const { currentUser: user } = useAuth();
 
   const [loading, setLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
@@ -521,8 +522,8 @@ function Cadastrar() {
         createdAt: isEdit ? undefined : serverTimestamp(),
         updatedAt: serverTimestamp(),
         dataResposta: serverTimestamp(),
-        userId: user?.uid || 'anonymous',
-        userEmail: user?.email || 'não informado',
+        userId: 'sistema',
+        userEmail: 'sistema@sacarolha.com',
         
         // Campos adicionais para melhor organização
         status: 'ativo',
@@ -589,7 +590,7 @@ function Cadastrar() {
 
   if (loading) {
     return (
-      <StyledContainer maxWidth="md">
+      <StyledContainer maxWidth={false}>
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
           <CircularProgress size={50} />
         </Box>
@@ -598,7 +599,7 @@ function Cadastrar() {
   }
 
   return (
-    <StyledContainer maxWidth="md">
+    <StyledContainer maxWidth={false}>
       <HeaderBox>
         <Typography 
           variant={isMobile ? "h5" : "h4"} 

@@ -32,8 +32,18 @@ import { db } from '../../firebase/config';
 const StyledTextField = styled(TextField)(({ theme }) => ({
   '& .MuiOutlinedInput-root': {
     borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    '& .MuiOutlinedInput-notchedOutline': {
+      borderColor: 'rgba(0, 0, 0, 0.3)',
+      borderWidth: '1.5px',
+    },
     '&:hover .MuiOutlinedInput-notchedOutline': {
       borderColor: theme.palette.primary.main,
+      borderWidth: '2px',
+    },
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.palette.primary.main,
+      borderWidth: '2px',
     }
   },
   [theme.breakpoints.down('sm')]: {
@@ -49,8 +59,18 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 const StyledFormControl = styled(FormControl)(({ theme }) => ({
   '& .MuiOutlinedInput-root': {
     borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    '& .MuiOutlinedInput-notchedOutline': {
+      borderColor: 'rgba(0, 0, 0, 0.3)',
+      borderWidth: '1.5px',
+    },
     '&:hover .MuiOutlinedInput-notchedOutline': {
       borderColor: theme.palette.primary.main,
+      borderWidth: '2px',
+    },
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.palette.primary.main,
+      borderWidth: '2px',
     }
   },
   [theme.breakpoints.down('sm')]: {

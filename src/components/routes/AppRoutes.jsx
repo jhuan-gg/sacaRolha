@@ -3,14 +3,16 @@ import Login from '../pages/Login';
 import Home from '../pages/Home';
 import Listagem from '../pages/Listagem';
 import Cadastrar from '../pages/Cadastrar';
+import CadastrarSimple from '../pages/CadastrarSimple';
 import Visualizar from '../pages/Visualizar';
 import Configuracoes from '../pages/Configuracoes';
 import NotFound from '../pages/NotFound';
 import ServerError from '../pages/ServerError';
 import Unauthorized from '../pages/Unauthorized';
 import MainLayout from '../layout/MainLayout';
-import SecureRoute from '../common/SecureRoute';
+import UltraSecureRoute from '../common/UltraSecureRoute';
 import NavigationGuard from '../common/NavigationGuard';
+import PageTransition from '../common/PageTransition';
 
 // Componente para rotas que precisam do layout principal
 function LayoutRoute({ children }) {
@@ -24,45 +26,47 @@ function LayoutRoute({ children }) {
 function AppRoutes() {
   return (
     <NavigationGuard>
-      <Routes>
+      <PageTransition>
+        <Routes>
         {/* Rota principal redireciona para login (tela primária) */}
         <Route path="/" element={<Navigate to="/login" replace />} />
         
         {/* Login sem layout - TELA PRIMÁRIA */}
         <Route path="/login" element={<Login />} />
         
-        {/* Rotas protegidas com layout e verificação de segurança */}
+        {/* Rotas protegidas com layout e verificação ULTRA-SEGURA */}
         <Route path="/home" element={
-          <SecureRoute>
+          <UltraSecureRoute>
             <LayoutRoute><Home /></LayoutRoute>
-          </SecureRoute>
+          </UltraSecureRoute>
         } />
         <Route path="/listagem" element={
-          <SecureRoute>
+          <UltraSecureRoute>
             <LayoutRoute><Listagem /></LayoutRoute>
-          </SecureRoute>
+          </UltraSecureRoute>
         } />
         <Route path="/cadastrar" element={
-          <SecureRoute>
+          <UltraSecureRoute>
             <LayoutRoute><Cadastrar /></LayoutRoute>
-          </SecureRoute>
+          </UltraSecureRoute>
         } />
         <Route path="/visualizar" element={
-          <SecureRoute>
+          <UltraSecureRoute>
             <LayoutRoute><Visualizar /></LayoutRoute>
-          </SecureRoute>
+          </UltraSecureRoute>
         } />
         <Route path="/configuracoes" element={
-          <SecureRoute>
+          <UltraSecureRoute>
             <LayoutRoute><Configuracoes /></LayoutRoute>
-          </SecureRoute>
+          </UltraSecureRoute>
         } />
         
         {/* Páginas de erro */}
         <Route path="/error/500" element={<ServerError />} />
         <Route path="/error/403" element={<Unauthorized />} />
         <Route path="*" element={<NotFound />} />
-      </Routes>
+        </Routes>
+      </PageTransition>
     </NavigationGuard>
   );
 }

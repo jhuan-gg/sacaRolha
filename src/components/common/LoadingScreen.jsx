@@ -42,7 +42,7 @@ function LoadingScreen({ message = "Carregando...", minimal = false }) {
         elevation={8}
         sx={{
           p: 3,
-          borderRadius: 2,
+          borderRadius: 1,
           textAlign: 'center',
           maxWidth: 350,
           backgroundColor: 'rgba(255, 255, 255, 0.95)',

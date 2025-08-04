@@ -47,6 +47,10 @@ const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
 const StyledContainer = styled(Container)(({ theme }) => ({
   paddingTop: theme.spacing(2),
   paddingBottom: theme.spacing(3),
+  paddingLeft: theme.spacing(3),
+  paddingRight: theme.spacing(3),
+  minHeight: '100vh',
+  backgroundColor: theme.palette.grey[50],
   [theme.breakpoints.down('sm')]: {
     paddingLeft: theme.spacing(1),
     paddingRight: theme.spacing(1)
@@ -244,7 +248,7 @@ function Listagem() {
 
   if (loading) {
     return (
-      <StyledContainer maxWidth="xl">
+      <StyledContainer maxWidth={false}>
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
           <CircularProgress size={50} />
         </Box>
@@ -253,7 +257,7 @@ function Listagem() {
   }
 
   return (
-    <StyledContainer maxWidth="xl">
+    <StyledContainer maxWidth={false}>
       {error && (
         <Alert 
           severity="error" 
@@ -464,7 +468,7 @@ function Listagem() {
                     p: isMobile ? 1.5 : 1
                   }}
                 >
-                  <VisibilityIcon fontSize={isMobile ? "medium" : "small"} /> //preciso ajustar isso depois
+                  <VisibilityIcon fontSize={isMobile ? "medium" : "small"} /> 
                 </IconButton>
                 <IconButton
                   color="secondary"

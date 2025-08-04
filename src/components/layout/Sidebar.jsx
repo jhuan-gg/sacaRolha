@@ -26,6 +26,8 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
+import useLogout from '../../hooks/useLogout';
+import { auth } from '../../firebase/config';
 
 const drawerWidth = 280;
 
@@ -111,18 +113,28 @@ const menuItems = [
     icon: <WineIcon />,
     path: '/cadastrar'
   },
-  {
-    text: 'Configurações',
-    icon: <SettingsIcon />,
-    path: '/configuracoes'
-  }
+
 ];
 
 function Sidebar({ open, onClose, permanent = false }) {
   const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
+  const logout = useLogout();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  // Função para extrair iniciais do email
+  const getInitialsFromEmail = (email) => {
+    if (!email) return 'U';
+    const parts = email.split('@')[0].split('.');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return email[0].toUpperCase();
+  };
+
+  const userEmail = auth.currentUser?.email || 'usuário@exemplo.com';
+  const userInitials = getInitialsFromEmail(userEmail);
 
   const handleItemClick = (path) => {
     navigate(path);
@@ -131,9 +143,10 @@ function Sidebar({ open, onClose, permanent = false }) {
     }
   };
 
-  const handleLogout = () => {
-    // Em produção, faria logout real
-    navigate('/login');
+  const handleLogout = async () => {
+    console.log('🚪 Sidebar: Iniciando logout...');
+    await logout();
+    
     if (isMobile && onClose) {
       onClose();
     }
@@ -170,13 +183,17 @@ function Sidebar({ open, onClose, permanent = false }) {
       {/* User Section */}
       <UserSection>
         <Box display="flex" alignItems="center" mb={1}>
-          <UserAvatar>JS</UserAvatar>
+          <UserAvatar>{userInitials}</UserAvatar>
           <Box ml={2} flex={1}>
-            <Typography variant="subtitle1" fontWeight="medium">
-              João Silva
+            <Typography variant="subtitle1" fontWeight="medium" sx={{ 
+              fontSize: '0.9rem',
+              wordBreak: 'break-word',
+              lineHeight: 1.2
+            }}>
+              {userEmail}
             </Typography>
             <Typography variant="caption" sx={{ opacity: 0.8 }}>
-              Administrador
+              Usuário
             </Typography>
           </Box>
         </Box>
@@ -244,7 +261,7 @@ function Sidebar({ open, onClose, permanent = false }) {
         open={open}
         onClose={onClose}
         ModalProps={{
-          keepMounted: true // Better mobile performance
+          keepMounted: true 
         }}
       >
         {drawerContent}

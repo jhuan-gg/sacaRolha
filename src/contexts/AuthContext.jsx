@@ -26,6 +26,7 @@ export function AuthProvider({ children }) {
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [authChecked, setAuthChecked] = useState(false);
+  const [initializing, setInitializing] = useState(true);
 
   // Login com email e senha
   const login = async (email, password) => {
@@ -212,22 +213,25 @@ export function AuthProvider({ children }) {
         setCurrentUser(null);
         setUserProfile(null);
       } finally {
+        // CRÍTICO: Só libera após verificação completa
         setLoading(false);
         setAuthChecked(true);
+        setInitializing(false);
       }
     });
 
-    // Timeout de segurança mais agressivo
+    // Timeout de segurança mais rígido para evitar flash
     timeoutId = setTimeout(() => {
       if (loading && !authChecked) {
-        console.warn('⏰ AuthContext: Timeout atingido, liberando interface');
+        console.warn('⏰ AuthContext: Timeout atingido - assumindo usuário não logado');
         setLoading(false);
         setAuthChecked(true);
-        // Se não conseguiu verificar em 2 segundos, assume não logado
+        setInitializing(false);
+        // Se não conseguiu verificar em 1.5 segundos, assume não logado por segurança
         setCurrentUser(null);
         setUserProfile(null);
       }
-    }, 2000);
+    }, 1500);
 
     return () => {
       unsubscribe();
@@ -245,12 +249,14 @@ export function AuthProvider({ children }) {
     updateUserProfile,
     hasRole,
     hasPermission,
-    loading
+    loading,
+    authChecked,
+    initializing
   };
 
   return (
     <AuthContext.Provider value={value}>
-      {loading ? (
+      {(loading || initializing) ? (
         <LoadingScreen 
           message="Verificando autenticação..." 
           minimal={false}

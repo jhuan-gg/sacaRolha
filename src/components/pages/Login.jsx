@@ -12,7 +12,6 @@ import {
   InputLabel,
   FormControl,
   Fade,
-  Zoom,
   Alert,
   CircularProgress,
   Link
@@ -25,8 +24,11 @@ import {
   Lock as LockIcon
 } from '@mui/icons-material';
 import { IconButton, InputAdornment } from '@mui/material';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContextSimplified';
 import { useNavigate } from 'react-router-dom';
+import authManager from '../../utils/AuthManager';
+import PWAInstallPrompt from '../common/PWAInstallPrompt';
+import usePWAInstall from '../../hooks/usePWAInstall';
 
 // Componentes estilizados
 const LoginContainer = styled(Box)(({ theme }) => ({
@@ -188,35 +190,44 @@ function Login() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   
   const theme = useTheme();
   const navigate = useNavigate();
-  const { login, resetPassword, currentUser } = useAuth();
+  const { login, resetPassword } = useAuth();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
   const isLandscapeMobile = useMediaQuery('(orientation: landscape) and (max-height: 500px)');
 
-  // Redireciona se já estiver logado
-  useEffect(() => {
-    if (currentUser) {
-      console.log('🏠 Usuário já logado, redirecionando para dashboard...');
-      navigate('/home', { replace: true });
-    }
-  }, [currentUser, navigate]);
+  // PWA Install Hook
+  const { 
+    isInstallable, 
+    isInstalled, 
+    isMobile: isPWAMobile, 
+    install, 
+    isInstalling 
+  } = usePWAInstall();
+  
+  const [showPWAPrompt, setShowPWAPrompt] = useState(false);
 
-  // Previne acesso direto a rotas protegidas via URL
+  // Mostrar prompt PWA após 3 segundos em dispositivos móveis
   useEffect(() => {
-    const currentPath = window.location.pathname;
-    const protectedPaths = ['/home', '/listagem', '/cadastrar', '/visualizar', '/configuracoes'];
-    
-    if (protectedPaths.includes(currentPath) && !currentUser) {
-      console.log('🛡️ Tentativa de acesso direto bloqueada:', currentPath);
-      navigate('/login', { replace: true });
+    if (isPWAMobile && isInstallable && !isInstalled) {
+      const timer = setTimeout(() => {
+        setShowPWAPrompt(true);
+      }, 3000);
+      return () => clearTimeout(timer);
     }
-  }, [navigate, currentUser]);
+  }, [isPWAMobile, isInstallable, isInstalled]);
+
+  const handlePWAInstall = async () => {
+    const success = await install();
+    if (success) {
+      setShowPWAPrompt(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -232,17 +243,19 @@ function Login() {
       return;
     }
 
-    setLoading(true);
-    console.log('🔐 Tentando fazer login...');
+    setIsLoading(true);
+    console.log('🔐 Login: Tentando fazer login...');
 
     try {
       await login(email, senha);
-      console.log('✅ Login bem-sucedido, redirecionando...');
+      console.log('✅ Login: Login bem-sucedido');
       
-      // Redireciona imediatamente para o dashboard
-      navigate('/home', { replace: true });
+      // Força re-inicialização do AuthManager para atualizar estado
+      await authManager.initialize();
+      
+      // NÃO precisa redirecionar manualmente - o App.jsx fará isso automaticamente
     } catch (error) {
-      console.error('❌ Erro no login:', error);
+      console.error('❌ Login: Erro no login:', error);
       
       // Tratar diferentes tipos de erro do Firebase
       switch (error.code) {
@@ -271,7 +284,7 @@ function Login() {
           setError(error.message || 'Erro ao fazer login. Tente novamente');
       }
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -281,7 +294,7 @@ function Login() {
       return;
     }
 
-    setLoading(true);
+    setIsLoading(true);
     setError('');
 
     try {
@@ -293,7 +306,7 @@ function Login() {
       console.error('Erro ao enviar email de recuperação:', error);
       setError('Erro ao enviar email de recuperação. Verifique o email digitado');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -317,8 +330,7 @@ function Login() {
 
   return (
     <LoginContainer>
-      <Zoom in={true} timeout={800}>
-        <LoginCard>
+      <LoginCard>
           <LogoSection>
             <Fade in={true} timeout={1200}>
               <LogoBox elevation={0}>
@@ -401,7 +413,7 @@ function Login() {
                     variant="outlined"
                     fullWidth
                     required
-                    disabled={loading}
+                    disabled={isLoading}
                     sx={{ 
                       '& .MuiOutlinedInput-root': { 
                         color: 'tertiary.main',
@@ -434,7 +446,7 @@ function Login() {
                     variant="outlined"
                     fullWidth
                     required
-                    disabled={loading}
+                    disabled={isLoading}
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
@@ -442,7 +454,7 @@ function Login() {
                             aria-label="toggle password visibility"
                             onClick={handleClickShowPassword}
                             edge="end"
-                            disabled={loading}
+                            disabled={isLoading}
                             sx={{ 
                               color: 'tertiary.main',
                               '&:hover': {
@@ -490,12 +502,12 @@ function Login() {
                   variant="contained"
                   fullWidth
                   size="large"
-                  disabled={loading}
+                  disabled={isLoading}
                   sx={{
                     position: 'relative',
                   }}
                 >
-                  {loading ? (
+                  {isLoading ? (
                     <>
                       <CircularProgress 
                         size={20} 
@@ -516,7 +528,7 @@ function Login() {
                 <Button
                   variant="text"
                   onClick={handleForgotPassword}
-                  disabled={loading}
+                  disabled={isLoading}
                   sx={{
                     mt: 2,
                     color: 'tertiary.main',
@@ -532,7 +544,14 @@ function Login() {
             </Fade>
           </FormSection>
         </LoginCard>
-      </Zoom>
+
+      {/* PWA Install Prompt */}
+      <PWAInstallPrompt
+        open={showPWAPrompt}
+        onClose={() => setShowPWAPrompt(false)}
+        onInstall={handlePWAInstall}
+        isInstalling={isInstalling}
+      />
     </LoginContainer>
   );
 }

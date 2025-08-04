@@ -23,7 +23,8 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import Sidebar from './Sidebar';
-import { useAuth } from '../../contexts/AuthContext';
+import useLogout from '../../hooks/useLogout';
+import useCurrentUser from '../../hooks/useCurrentUser';
 
 const drawerWidth = 280;
 
@@ -66,7 +67,8 @@ function MainLayout({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const { currentUser, logout } = useAuth();
+  const logout = useLogout();
+  const currentUser = useCurrentUser();
   
   // Sidebar sempre aberto em desktop, controlado pelo usuário em mobile
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
