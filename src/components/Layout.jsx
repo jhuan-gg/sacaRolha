@@ -31,10 +31,10 @@ const Layout = () => {
 
   return (
     <Fade in={true} timeout={400}>
-      <Box sx={{ minHeight: '100vh', bgcolor: '#f5f5f5' }}>
+      <Box sx={{ minHeight: '100vh', bgcolor: '#f5f5f5', pt: !isDashboard ? { xs: 7, sm: 8 } : 0 }}>
         {/* Header apenas para páginas que não são Dashboard */}
         {!isDashboard && (
-          <AppBar position="static" sx={{ bgcolor: '#000000' }} elevation={1}>
+          <AppBar position="fixed" sx={{ bgcolor: '#000000', top: 0, left: 0, width: '100%' }} elevation={1}>
             <Toolbar>
               <WineBar sx={{ mr: 2 }} />
               <Typography 

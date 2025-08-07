@@ -17,7 +17,10 @@ import {
   useTheme,
   useMediaQuery
 } from '@mui/material'
-import { 
+
+import BottomNavigation from '../components/BottomNavigation'
+
+import {
   ArrowBack,
   LocalBar,
   LocationOn,
@@ -429,6 +432,8 @@ const VisualizarRotulo = () => {
         </div>
     </Fade>
     
+    {/* Espaço extra para o BottomNavigation no mobile */}
+    {isMobile && <Box sx={{ height: 80 }} />}
     <BottomNavigation />
     </>
   )

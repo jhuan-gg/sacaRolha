@@ -293,6 +293,8 @@ const CartaVinhos = () => {
         </div>
     </Fade>
     {/* BottomNavigation só no mobile */}
+    {/* Espaço extra para o BottomNavigation no mobile */}
+    {isMobile && <Box sx={{ height: 80 }} />}
     {isMobile && <BottomNavigation />}
     </>
   )
