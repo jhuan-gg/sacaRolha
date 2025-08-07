@@ -1,22 +1,21 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="en">
   <head>
+    <link rel="manifest" href="/manifest.json" />
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/sacarolha.png" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#395a4f" />
-    <meta name="description" content="SacaRolha - Aplicativo para gerenciamento e cadastro de vinhos da sua confraria" />
-    
-    <!-- iOS Meta Tags -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="SacaRolha" />
-    <link rel="apple-touch-icon" href="/wine-4851696.png" />
-    
-    <title>SacaRolha - Cadastro de Vinhos</title>
+    <title>Saca Rolha</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/service-worker.js');
+        });
+      }
+    </script>
   </body>
 </html>

@@ -1,31 +1,16 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Regras para a coleção de rótulos
+    match /rotulos/{rotuloId} {
+      // Permitir leitura e escrita para usuários autenticados
+      allow read, write: if request.auth != null;
+    }
+    
     // Regras para a coleção de vinhos
     match /vinhos/{vinhoId} {
       // Permitir leitura e escrita para usuários autenticados
       allow read, write: if request.auth != null;
-      
-      // Validações para criação/atualização
-      allow create: if request.auth != null && 
-        validateVinhoData(request.resource.data);
-      
-      allow update: if request.auth != null && 
-        validateVinhoData(request.resource.data) &&
-        resource.data.keys().hasAll(['createdAt']) &&
-        request.resource.data.createdAt == resource.data.createdAt;
-    }
-    
-    // Função para validar dados do vinho
-    function validateVinhoData(data) {
-      return data.keys().hasAll(['nomeVinho', 'produtor', 'tipoVinho', 'safra', 'regiao']) &&
-        data.nomeVinho is string && data.nomeVinho.size() > 0 &&
-        data.produtor is string && data.produtor.size() > 0 &&
-        data.tipoVinho is string && data.tipoVinho.size() > 0 &&
-        data.safra is string && data.safra.size() > 0 &&
-        data.regiao is string && data.regiao.size() > 0 &&
-        (data.notaAvaliacao is number ? data.notaAvaliacao >= 0 && data.notaAvaliacao <= 5 : true) &&
-        (data.teorAlcoolico is number ? data.teorAlcoolico >= 0 && data.teorAlcoolico <= 20 : true);
     }
   }
 }

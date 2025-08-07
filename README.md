@@ -1,64 +1,42 @@
-# SacaRolha
+# Saca Rolha
 
-**Teste Técnico - Desenvolvedor Frontend**
+Este projeto foi desenvolvido como parte de um processo seletivo para uma vaga de emprego.
 
-PWA de gestão de vinhos com React + Firebase.
+## Sobre
 
-## Stack
+Saca Rolha é um catálogo de vinhos com cadastro, listagem e avaliação, desenvolvido em React, Firebase e Material-UI, com suporte a PWA (instalável no mobile e desktop).
 
-- React 19 + Hooks
-- Material-UI 7
-- Firebase (Auth + Firestore)
-- Vite + PWA
-- React Router
+## Como rodar o projeto
+
+1. **Clone o repositório:**
+   ```bash
+   git clone <url-do-repo>
+   cd sacaRolha
+   ```
+
+2. **Instale as dependências:**
+   ```bash
+   npm install
+   ```
+
+3. **Configure o Firebase:**
+   - Crie um projeto no [Firebase](https://console.firebase.google.com/)
+   - Copie as credenciais para o arquivo `src/firebase/config.js`
+
+4. **Rode o projeto:**
+   ```bash
+   npm run dev
+   ```
+
+5. **Acesse no navegador:**
+   - http://localhost:5173
 
 ## Funcionalidades
-
-- Autenticação Firebase
-- CRUD completo
-- Dashboard com gráficos
-- PWA instalável
-- Responsive design
-
-## Executar
-
-```bash
-git clone https://github.com/jhuan-gg/sacaRolha.git
-cd sacaRolha
-npm install
-npm run dev
-```
-
-**Configurar Firebase:** `src/firebase/config.js`
-
-## Build
-
-```bash
-npm run build
-npm run preview
-```
-
-## Estrutura
-
-```
-src/
-├── components/     # Componentes React
-├── pages/         # Páginas principais  
-├── contexts/      # Context API
-├── firebase/      # Config Firebase
-├── hooks/         # Custom hooks
-└── theme/         # Material-UI theme
-```
-
-## Demonstra
-
-- Arquitetura React moderna
-- PWA com service worker
-- Firebase integration
-- Design system Material-UI
-- Responsive mobile-first
-- Código limpo e escalável
+- Cadastro e listagem de rótulos de vinho
+- Avaliação e ficha técnica
+- Layout responsivo e mobile first
+- PWA: pode ser instalado como app no celular ou desktop
 
 ---
 
-**[Jhuan Gabriel](https://github.com/jhuan-gg)** - Teste técnico para vaga de emprego
+Desenvolvido para fins de avaliação técnica.
