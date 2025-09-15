@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { collection, getDocs, orderBy, query } from 'firebase/firestore'
+import { collection, getDocs, orderBy, query, deleteDoc, doc } from 'firebase/firestore'
 import { db } from '../firebase/config'
 import {
   Container,
@@ -17,12 +17,18 @@ import {
   CircularProgress,
   Alert,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@mui/material'
 import BottomNavigation from '../components/BottomNavigation'
 import { 
   Visibility,
-  LocalBar
+  LocalBar,
+  Delete
 } from '@mui/icons-material'
 
 
@@ -33,6 +39,37 @@ const CartaVinhos = () => {
   
   const [rotulos, setRotulos] = useState([])
   const [loading, setLoading] = useState(true)
+  const [deleteId, setDeleteId] = useState(null)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  // Funções de exclusão
+  const handleDeleteClick = (rotuloId) => {
+    setDeleteId(rotuloId)
+    setConfirmOpen(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteId) {
+      console.log('Nenhum deleteId definido!')
+      return
+    }
+    console.log('Tentando deletar:', deleteId)
+    try {
+      await deleteDoc(doc(db, 'rotulos', deleteId))
+      console.log('Deletado com sucesso:', deleteId)
+      setRotulos(rotulos.filter(r => r.id !== deleteId))
+    } catch (err) {
+      console.error('Erro ao deletar rótulo:', err)
+      alert('Erro ao deletar rótulo!')
+    } finally {
+      setConfirmOpen(false)
+      setDeleteId(null)
+    }
+  }
+
+  const handleDeleteCancel = () => {
+    setConfirmOpen(false)
+    setDeleteId(null)
+  }
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -280,13 +317,45 @@ const CartaVinhos = () => {
                         },
                       }}
                     >
-                      Ver Detalhes
+                      Detalhes
                     </Button>
+                      <Button
+                        fullWidth
+                        variant="outlined"
+                        startIcon={<Delete />}
+                        onClick={() => handleDeleteClick(rotulo.id)}
+                        sx={{
+                          color: '#000000',
+                          borderColor: '#000000',
+                          '&:hover': {
+                            borderColor: '#000000',
+                            backgroundColor: '#f5f5f5',
+                          },
+                        }}
+                      >
+                        Apagar
+                      </Button>
                   </CardActions>
                 </Card>
               </Grid>
             ))}
           </Grid>
+                    <Dialog open={confirmOpen} onClose={handleDeleteCancel}>
+                      <DialogTitle>Confirmar exclusão</DialogTitle>
+                      <DialogContent>
+                        <DialogContentText>
+                          Tem certeza que deseja apagar este rótulo? Essa ação não pode ser desfeita.
+                        </DialogContentText>
+                      </DialogContent>
+                      <DialogActions>
+                        <Button onClick={handleDeleteCancel} color="primary">
+                          Cancelar
+                        </Button>
+                        <Button onClick={handleDeleteConfirm} color="error" autoFocus>
+                          Apagar
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
           </div>
         )}
         

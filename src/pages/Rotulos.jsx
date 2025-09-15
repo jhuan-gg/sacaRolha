@@ -27,7 +27,7 @@ import BottomNavigation from '../components/BottomNavigation'
 const steps = [
   'Ficha Técnica',
   'Imagem e Compra',
-  'Características',
+  'Atributos',
   'Análise',
   'Avaliação Geral'
 ]
@@ -412,89 +412,56 @@ const Rotulos = () => {
         )}
 
         <Box sx={{ mt: 3 }}>
-          {isMobile ? (
-            <>
-              <Box sx={{ 
-                width: '100%', 
-                mb: 4, 
-                display: 'flex', 
-                justifyContent: 'center',
-                px: 2
-              }}>
-                <Stepper
-                  activeStep={activeStep}
-                  alternativeLabel
-                  orientation="horizontal"
-                  sx={{
-                    width: '100%',
-                    '& .MuiStep-root': { 
-                      flex: 1,
-                      minWidth: '60px'
-                    },
-                    '& .MuiStepConnector-root': { 
-                      flex: 1,
-                      minWidth: '20px'
-                    },
-                    '& .MuiStepLabel-root': { 
-                      display: 'flex', 
-                      justifyContent: 'center',
-                      '& .MuiStepLabel-label': {
-                        fontSize: '0.75rem',
-                        textAlign: 'center',
-                        lineHeight: 1.2
-                      }
-                    },
-                    '& .MuiStepIcon-root': {
-                      fontSize: '1.2rem'
+          {/* Sempre renderiza o layout mobile, expandido para desktop */}
+          <>
+            <Box sx={{ 
+              width: '100%', 
+              maxWidth: { xs: '100%', md: '900px' },
+              mb: 4, 
+              display: 'flex', 
+              justifyContent: 'center',
+              px: 2,
+              mx: 'auto'
+            }}>
+              <Stepper
+                activeStep={activeStep}
+                alternativeLabel
+                orientation="horizontal"
+                sx={{
+                  width: '100%',
+                  '& .MuiStep-root': { 
+                    flex: 1,
+                    minWidth: '60px'
+                  },
+                  '& .MuiStepConnector-root': { 
+                    flex: 1,
+                    minWidth: '20px'
+                  },
+                  '& .MuiStepLabel-root': { 
+                    display: 'flex', 
+                    justifyContent: 'center',
+                    '& .MuiStepLabel-label': {
+                      fontSize: '0.85rem',
+                      textAlign: 'center',
+                      lineHeight: 1.2
                     }
-                  }}
-                >
-                  {steps.map((label) => (
-                    <Step key={label}>
-                      <StepLabel>{label}</StepLabel>
-                    </Step>
-                  ))}
-                </Stepper>
-              </Box>
-              <Box sx={{ minHeight: 400 }}>
-                {renderStepContent(activeStep)}
-              </Box>
-            </>
-          ) : (
-            <Grid container spacing={4}>
-              <Grid item md={3}>
-                <Box sx={{ position: 'sticky', top: 20 }}>
-                  <Stepper
-                    activeStep={activeStep}
-                    orientation="vertical"
-                    sx={{
-                      '& .MuiStepLabel-root': {
-                        py: 1
-                      },
-                      '& .MuiStepLabel-label': {
-                        fontSize: '1rem',
-                        fontWeight: activeStep === steps.indexOf(steps.find((_, i) => i === activeStep)) ? 'bold' : 'normal'
-                      },
-                      '& .MuiStepIcon-root': {
-                        fontSize: '1.5rem'
-                      }
-                    }}
-                  >
-                    {steps.map((label) => (
-                      <Step key={label}>
-                        <StepLabel>{label}</StepLabel>
-                      </Step>
-                    ))}
-                  </Stepper>
-                </Box>
-              </Grid>
-              <Grid item md={9}>
-                <Box sx={{ minHeight: 400 }}>
-                  {renderStepContent(activeStep)}
-                </Box>
-              </Grid>
-            </Grid>
-          )}
+                  },
+                  '& .MuiStepIcon-root': {
+                    fontSize: '1.2rem'
+                  }
+                }}
+              >
+                {steps.map((label) => (
+                  <Step key={label}>
+                    <StepLabel>{label}</StepLabel>
+                  </Step>
+                ))}
+              </Stepper>
+            </Box>
+            <Box sx={{ minHeight: 400, maxWidth: { xs: '100%', md: '900px' }, mx: 'auto' }}>
+              {renderStepContent(activeStep)}
+            </Box>
+          </>
 
           <Box display="flex" justifyContent="space-between" mt={4}>
             <Button

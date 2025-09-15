@@ -7,8 +7,6 @@ import {
   Typography,
   Button,
   Fade,
-  Grid,
-  Paper,
   Chip,
   Rating,
   CircularProgress,
@@ -17,6 +15,7 @@ import {
   useTheme,
   useMediaQuery
 } from '@mui/material'
+import styled from 'styled-components'
 
 import BottomNavigation from '../components/BottomNavigation'
 
@@ -95,31 +94,40 @@ const VisualizarRotulo = () => {
     }
   }
 
-  const renderInfoCard = (title, icon, children) => (
-    <Paper 
-      elevation={1} 
-      sx={{ 
-        p: { xs: 2, sm: 3 }, 
-        height: '100%',
-        border: '1px solid #e0e0e0',
-        borderRadius: 2,
-        transition: 'all 0.2s ease-in-out',
-        '&:hover': {
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-        }
-      }}
-    >
-      <Box display="flex" alignItems="center" mb={2}>
-        <Box sx={{ color: '#000000', mr: 1 }}>
-          {icon}
-        </Box>
-        <Typography variant="h6" fontWeight="bold">
-          {title}
-        </Typography>
-      </Box>
-      {children}
-    </Paper>
-  )
+  const Card = styled.div`
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 32px 24px;
+  margin-bottom: 16px;
+    transition: box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+    @media (max-width: 900px) {
+      max-width: 100%;
+      padding: 20px 8px;
+    }
+    &:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    }
+  `
+
+  const CardTitle = styled.div`
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+    font-weight: bold;
+    font-size: 1.25rem;
+    color: #000;
+    gap: 8px;
+  `
 
   const renderField = (label, value, unit = '') => (
     <Box mb={2}>
@@ -277,147 +285,58 @@ const VisualizarRotulo = () => {
           </Box>
         </Box>
 
-        <div style={{ 
-          width: '100%',
-          padding: isMobile ? '0 8px' : '0',
-          margin: '0',
-          boxSizing: 'border-box'
-        }}>
-          <Grid container spacing={{ xs: 1, sm: 3 }} style={{
-            width: '100%', 
-            margin: '0',
-            boxSizing: 'border-box'
-          }}>
-            {/* Ficha Técnica */}
-            <Grid 
-              item 
-              xs={12} 
-              md={6}
-              style={{
-                width: isMobile ? '100%' : 'auto',
-                padding: isMobile ? '4px 0' : 'auto',
-                margin: '0'
-              }}
-            >
-            {renderInfoCard(
-              'Ficha Técnica',
-              <LocalBar />,
-              <>
-                {renderField('Produtor', rotulo?.produtor)}
-                {renderField('Região', rotulo?.regiao)}
-                {renderField('Uva', rotulo?.uva)}
-                {renderField('Teor Alcoólico', rotulo?.abv, '%')}
-              </>
+  <Box display="flex" flexDirection="column" alignItems="stretch" width="100%" gap={3}>
+          <Card>
+            <CardTitle><LocalBar />Ficha Técnica</CardTitle>
+            {renderField('Produtor', rotulo?.produtor)}
+            {renderField('Região', rotulo?.regiao)}
+            {renderField('Uva', rotulo?.uva)}
+            {renderField('Teor Alcoólico', rotulo?.abv, '%')}
+          </Card>
+          <Card>
+            <CardTitle><AttachMoney />Informações de Compra</CardTitle>
+            {renderField('Valor', rotulo?.valor ? `R$ ${rotulo.valor.toFixed(2)}` : null)}
+            {renderField('Data da Compra', formatarData(rotulo?.dataCompra))}
+            {renderField('Local da Compra', rotulo?.localCompra)}
+          </Card>
+          <Card>
+            <CardTitle><Assessment />Características</CardTitle>
+            {rotulo?.descricao && (
+              <Box mb={2}>
+                <Typography variant="caption" color="text.secondary" display="block">
+                  Descrição
+                </Typography>
+                <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                  {rotulo.descricao}
+                </Typography>
+              </Box>
             )}
-          </Grid>
-
-            {/* Informações de Compra */}
-            <Grid 
-              item 
-              xs={12} 
-              md={6}
-              style={{
-                width: isMobile ? '100%' : 'auto',
-                padding: isMobile ? '4px 0' : 'auto',
-                margin: '0'
-              }}
-            >
-            {renderInfoCard(
-              'Informações de Compra',
-              <AttachMoney />,
-              <>
-                {renderField('Valor', rotulo?.valor ? `R$ ${rotulo.valor.toFixed(2)}` : null)}
-                {renderField('Data da Compra', formatarData(rotulo?.dataCompra))}
-                {renderField('Local da Compra', rotulo?.localCompra)}
-              </>
+          </Card>
+          <Card>
+            <CardTitle><Star />Análise Sensorial</CardTitle>
+            {renderRating('Visual', rotulo?.visual)}
+            {renderRating('Corpo', rotulo?.corpo)}
+            {renderRating('Acidez', rotulo?.acidez)}
+            {renderRating('Tanino', rotulo?.tanino)}
+            {renderField('Aroma', rotulo?.aroma)}
+          </Card>
+          <Card>
+            <CardTitle><CalendarToday />Avaliação</CardTitle>
+            {renderField('Data da Avaliação', formatarData(rotulo?.dataAvaliacao))}
+            {renderField('Local da Avaliação', rotulo?.localAvaliacao)}
+            {renderRating('Avaliação Geral', rotulo?.avaliacaoGeral)}
+            {rotulo?.consideracoes && (
+              <Box mb={2}>
+                <Typography variant="caption" color="text.secondary" display="block">
+                  Considerações
+                </Typography>
+                <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                  {rotulo.consideracoes}
+                </Typography>
+              </Box>
             )}
-          </Grid>
-
-            {/* Características */}
-            <Grid 
-              item 
-              xs={12}
-              style={{
-                width: isMobile ? '100%' : 'auto',
-                padding: isMobile ? '4px 0' : 'auto',
-                margin: '0'
-              }}
-            >
-            {renderInfoCard(
-              'Características',
-              <Assessment />,
-              <>
-                {rotulo?.descricao && (
-                  <Box mb={2}>
-                    <Typography variant="caption" color="text.secondary" display="block">
-                      Descrição
-                    </Typography>
-                    <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
-                      {rotulo.descricao}
-                    </Typography>
-                  </Box>
-                )}
-              </>
-            )}
-          </Grid>
-
-            {/* Análise Sensorial */}
-            <Grid 
-              item 
-              xs={12} 
-              md={6}
-              style={{
-                width: isMobile ? '100%' : 'auto',
-                padding: isMobile ? '4px 0' : 'auto',
-                margin: '0'
-              }}
-            >
-            {renderInfoCard(
-              'Análise Sensorial',
-              <Star />,
-              <>
-                {renderRating('Visual', rotulo?.visual)}
-                {renderRating('Corpo', rotulo?.corpo)}
-                {renderRating('Acidez', rotulo?.acidez)}
-                {renderRating('Tanino', rotulo?.tanino)}
-                {renderField('Aroma', rotulo?.aroma)}
-              </>
-            )}
-          </Grid>
-
-            {/* Avaliação */}
-            <Grid 
-              item 
-              xs={12} 
-              md={6}
-              style={{
-                width: isMobile ? '100%' : 'auto',
-                padding: isMobile ? '4px 0' : 'auto',
-                margin: '0'
-              }}
-            >
-            {renderInfoCard(
-              'Avaliação',
-              <CalendarToday />,
-              <>
-                {renderField('Data da Avaliação', formatarData(rotulo?.dataAvaliacao))}
-                {renderField('Local da Avaliação', rotulo?.localAvaliacao)}
-                {renderRating('Avaliação Geral', rotulo?.avaliacaoGeral)}
-                {rotulo?.consideracoes && (
-                  <Box mb={2}>
-                    <Typography variant="caption" color="text.secondary" display="block">
-                      Considerações
-                    </Typography>
-                    <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
-                      {rotulo.consideracoes}
-                    </Typography>
-                  </Box>
-                )}
-              </>
-            )}
-          </Grid>
-          </Grid>
-        </div>
+          </Card>
+        </Box>
 
         <Divider sx={{ my: { xs: 3, sm: 4 } }} />
 

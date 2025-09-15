@@ -17,7 +17,7 @@ import {
   Fade,
   Grow
 } from '@mui/material'
-import { WineBar } from '@mui/icons-material'
+import { WineBar, Visibility } from '@mui/icons-material'
 
 const Login = () => {
   const navigate = useNavigate()
@@ -27,6 +27,10 @@ const Login = () => {
     password: '',
     confirmPassword: ''
   })
+  const [showPassword, setShowPassword] = useState(false)
+  const handleTogglePassword = () => {
+    setShowPassword((prev) => !prev)
+  }
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -205,7 +209,7 @@ const Login = () => {
               margin="normal"
               label="Senha"
               name="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={formData.password}
               onChange={handleInputChange}
               required
@@ -227,6 +231,17 @@ const Login = () => {
                 '& .MuiInputLabel-root.Mui-focused': {
                   color: 'black',
                 },
+              }}
+              InputProps={{
+                endAdornment: (
+                  <Button
+                    onClick={handleTogglePassword}
+                    tabIndex={-1}
+                    sx={{ minWidth: 0, p: 0, color: 'black' }}
+                  >
+                    <Visibility />
+                  </Button>
+                )
               }}
             />
 
